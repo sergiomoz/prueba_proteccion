@@ -1,46 +1,119 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+    <input type="text" v-model="hora">
+    <p>Serie generada: {{ serie }}</p>
+    <button v-on:click="generarSerie" variant="success">Generar Fibonnaci</button>
   </div>
 </template>
 
 <script>
+/* eslint-disable */
 export default {
   name: 'HelloWorld',
   props: {
     msg: String
+  },
+  data() {
+    return {
+      horas:0,
+      minutos:0,
+      segudos:0,
+      serie: 0,
+      hora: 0,
+      time: null
+    }
+  },
+  methods:{
+
+    generarSerie: function(){
+      var today = new Date();
+      var minutos = today.getMinutes().toString();
+      var segundos = today.getSeconds();
+
+      var semilla1 = parseInt(minutos.charAt(0));
+      var semilla2 = parseInt(minutos.charAt(1));
+      var repeticiones = segundos;
+
+      var valorObtenido = this.obtener(semilla1, semilla2, repeticiones);
+
+      this.serie= valorObtenido;
+
+      return valorObtenido;
+
+    },
+
+    obtener: function(semilla_1 , semilla_2, repeticiones){
+      var fib = [semilla_1, semilla_2];
+
+      for(let i = 2; i < repeticiones + 2; i++){
+        fib[i]=fib[i-1]+fib[i-2];
+      }
+
+      fib.reverse();
+
+      return fib;
+
+    },
+
+    actualizarTiempo: function(){
+      var date= new Date(Date.now());
+
+      this.horas = date.getHours();
+      this.minutos = date.getMinutes();
+      this.segundos = date.getSeconds();
+
+      this.minutos = this.minutp > 9? this.minutos: + (this.minutos.toString());
+      this.segudos = this.segundos >9? this.segundos: '0' + (this.segundos.toString());
+
+      this.hora = this.horas + ':' + this.minutos + ':' + this.segudos;
+    },
+
+    crearGrafica: function(){
+      var speedCanvas = document.getElementById("speedChart");
+
+    Chart.defaults.global.defaultFontFamily = "Lato";
+    Chart.defaults.global.defaultFontSize = 18;
+
+    var speedData = {
+      labels: ["0s", "10s", "20s", "30s", "40s", "50s", "60s"],
+      datasets: [{
+        label: "Car Speed (mph)",
+        data: [0, 59, 75, 20, 20, 55, 40],
+      }]
+    };
+
+    var chartOptions = {
+      legend: {
+        display: true,
+        position: 'top',
+        labels: {
+          boxWidth: 80,
+          fontColor: 'black'
+        }
+      }
+    };
+
+    var lineChart = new Chart(speedCanvas, {
+      type: 'line',
+      data: speedData,
+      options: chartOptions
+    });
   }
+  
+  },
+  mounted(){
+    this.time = setInterval(()=>{this.actualizarTiempo()},1000);
+  },
+  beforeDestroy() {
+            clearInterval(this.time)
+        },
 }
+/* eslint-disable */
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
 h3 {
   margin: 40px 0 0;
 }
